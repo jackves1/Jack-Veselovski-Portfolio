@@ -1,0 +1,40 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "name": "DNP3",
+      "description": "This one was done for DNP3.",
+      "format": "Web",
+      "year": 2021,
+      "image": "assets/project-1.png",
+      "visible": true
+    },
+    {
+      "id": 2,
+      "name": "Round Room",
+      "description": "Inspired by Panos Cosmatos",
+      "format": "CG Render",
+      "year": 2024,
+      "image": "assets/project-2.png",
+      "visible": true
+    },
+    {
+      "id": 3,
+      "name": "Ocean Views VR",
+      "description": "A custom VR experience.",
+      "format": "VR",
+      "year": 2021,
+      "image": "assets/project-3.png",
+      "visible": true
+    },
+    {
+      "id": 4,
+      "name": "Hellmoon",
+      "description": "The neverending project...",
+      "format": "Design",
+      "year": "ongoing",
+      "image": "assets/project-4.png",
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "title": "About Me",
+  "content": "Welcome to my portfolio. I'm a passionate developer and designer focused on creating engaging digital experiences. With expertise in game development, web design, and interactive media, I bring ideas to life through code and creativity.",
+  "sections": [
+    {
+      "heading": "Experience",
+      "text": "I have several years of experience in the digital industry, working on projects ranging from indie games to commercial web applications. I specialize in full-stack development and user-centered design."
+    },
+    {
+      "heading": "Skills",
+      "text": "Game Development, Web Development, UI/UX Design, Creative Coding, 3D Graphics, Animation, and more. I work with various technologies and continuously expand my skillset."
+    },
+    {
+      "heading": "Approach",
+      "text": "I believe in creating meaningful digital experiences that engage users and solve real problems. Every project is an opportunity to learn and push creative boundaries."
+    }
+  ]
+}

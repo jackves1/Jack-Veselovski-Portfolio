@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+<style>
+	@font-face {
+	font-family: "Alte Haas Grotesk";
+	src: url('assets/AlteHaasGroteskBold.ttf') format('truetype');
+	font-weight: bold;
+	}
+
+	@font-face {
+	font-family: "Alte Haas Grotesk";
+	src: url('assets/AlteHaasGroteskRegular.ttf') format('truetype');
+	font-weight: normal;
+	}
+
+	:root {
+	--fg: #ededed;
+	--muted: #8a8a8e;
+	}
+
+	* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	}
+
+	html, body {
+	height: 100%;
+	overflow: hidden;
+	}
+
+	body {
+	background: #0d0d0f;
+	color: var(--fg);
+	font-family: "Alte Haas Grotesk";
+	src: url('assets/AlteHaasGroteskBold.ttf') format('truetype');
+	font-weight: bold;
+	position: relative;
+	}
+
+	/* ---------- BACKGROUND LAYERS ---------- */
+	/* Everything here sits behind the nav. The video is the default/fallback
+	state. Each project's image fades in on top of it when hovered. */
+
+	.bg-layer {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	}
+
+	.bg-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: opacity 0.45s ease;
+	/* Swap the <source> below for your real fallback loop */
+  }
+
+  .bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  .bg-image.active {
+    opacity: 1;
+  }
+
+  /* Dark scrim so nav text stays legible over any media */
+  .bg-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  /* ---------- NAV ---------- */
+
+  nav {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 0.35rem;
+  }
+
+  .group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .spacer {
+    height: 1.5rem;
+  }
+
+  a.nav-link {
+    position: relative;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    font-weight: bold;
+    font-family: "Alte Haas Grotesk", sans-serif;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  a.nav-link:hover,
+  a.nav-link:focus-visible {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  a.nav-link:focus-visible {
+    outline: 1px dashed var(--muted);
+    outline-offset: 4px;
+  }
+
+  /* Project links: no underline. Instead, a solid block that blends
+     with whatever is behind it, so the text inverts/reacts against
+     the background media underneath. */
+
+  a.project-link {
+    position: relative;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    font-weight: bold;
+    font-family: "Alte Haas Grotesk", sans-serif;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  a.project-link:hover,
+  a.project-link:focus-visible {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  a.project-link:focus-visible {
+    outline: 1px dashed var(--muted);
+    outline-offset: 4px;
+  }
+
+  .index {
+    display: none;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 1.75rem;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    font-family: "Alte Haas Grotesk", sans-serif;
+    font-weight: normal;
+  }
+
+  @media (max-width: 480px) {
+    a.nav-link, a.project-link {
+      font-size: 0.95rem;
+    }
+  }
+
+  /* ---------- MODAL STYLES ---------- */
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .modal-content {
+    position: relative;
+    background: #0d0d0f;
+    border: 1px solid #2a2a2e;
+    border-radius: 4px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--fg);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    color: #ffffff;
+  }
+
+  .modal-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #2a2a2e;
+    padding-bottom: 1rem;
+  }
+
+  .modal-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-family: "Alte Haas Grotesk", sans-serif;
+    font-weight: bold;
+  }
+
+  .modal-header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .modal-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 2px;
+    object-fit: cover;
+  }
+
+  .modal-body p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--fg);
+  }
+
+  @media (max-width: 768px) {
+    .modal-content {
+      padding: 1.5rem;
+      max-width: 95%;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <!-- Default / fallback state: replace src with your real looping video -->
+  <video class="bg-video" id="bgVideo" autoplay muted loop playsinline>
+    <source src="assets/fallback-loop.mp4" type="video/mp4">
+  </video>
+  <!-- Fades in over the video when a project is hovered -->
+  <div class="bg-image" id="bgImage"></div>
+  <div class="bg-scrim"></div>
+</div>
+
+<nav>
+  <div class="group" id="projectsContainer">
+    <!-- Projects will be dynamically loaded here -->
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="group">
+    <a class="nav-link" href="#">About</a>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="group">
+    <a class="nav-link" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="nav-link" href="mailto:youremail@example.com">Email</a>
+  </div>
+</nav>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-content">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-header">
+      <h2 id="modalTitle"></h2>
+    </div>
+    <div class="modal-body" id="projectModalBody">
+      <img id="modalImage" src="" alt="Project image" class="modal-image">
+      <p id="modalMeta"></p>
+      <p id="modalDescription"></p>
+    </div>
+  </div>
+</div>
+
+<!-- About Modal Overlay -->
+<div class="modal-overlay" id="aboutModalOverlay">
+  <div class="modal-content">
+    <button class="modal-close" id="aboutModalClose">&times;</button>
+    <div class="modal-header">
+      <h2 id="aboutModalTitle"></h2>
+    </div>
+    <div class="modal-body" id="aboutModalBody">
+      <p id="aboutModalContent"></p>
+      <div id="aboutSections"></div>
+    </div>
+  </div>
+</div>
+
+<footer>Jack Veselovski - Developer / Designer - <span id="year"></span></footer>
+
+<script>
+  // Set current year in footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const bgImage = document.getElementById('bgImage');
+  const bgVideo = document.getElementById('bgVideo');
+  const projectsContainer = document.getElementById('projectsContainer');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalClose = document.getElementById('modalClose');
+  const aboutModalOverlay = document.getElementById('aboutModalOverlay');
+  const aboutModalClose = document.getElementById('aboutModalClose');
+  const aboutButton = document.querySelector('a.nav-link[href="#"]'); // About button
+
+  let allProjects = [];
+  let aboutData = null;
+
+  // Default projects fallback
+  const defaultProjects = [
+    { id: 1, name: "Project One", description: "A brief description of your first project.", format: "Web", year: 2024, image: "assets/project-1.png", visible: true },
+    { id: 2, name: "Project Two", description: "A brief description of your second project.", format: "Game", year: 2024, image: "assets/project-2.png", visible: true },
+    { id: 3, name: "Project Three", description: "A brief description of your third project.", format: "Web", year: 2023, image: "assets/project-3.png", visible: true },
+    { id: 4, name: "Project Four", description: "A brief description of your fourth project.", format: "Design", year: 2023, image: "assets/project-4.png", visible: false }
+  ];
+
+  // Fetch projects from JSON
+  fetch('./assets/projects.json?v=' + new Date().getTime())
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      allProjects = data.projects;
+      renderProjects();
+      attachModalHandlers();
+    })
+    .catch(error => {
+      console.error('Error loading projects:', error);
+      // Use default projects as fallback
+      allProjects = defaultProjects;
+      renderProjects();
+      attachModalHandlers();
+    });
+
+  // Fetch about data from JSON
+  fetch('./assets/about.json?v=' + new Date().getTime())
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      aboutData = data;
+      attachAboutHandler();
+    })
+    .catch(error => {
+      console.error('Error loading about:', error);
+    });
+
+  // Render only visible projects
+  function renderProjects() {
+    projectsContainer.innerHTML = '';
+    const visibleProjects = allProjects.filter(project => project.visible);
+
+    visibleProjects.forEach(project => {
+      const link = document.createElement('a');
+      link.className = 'project-link';
+      link.href = '#';
+      link.dataset.projectId = project.id;
+      link.dataset.bg = project.image;
+      link.textContent = project.name;
+
+      projectsContainer.appendChild(link);
+    });
+  }
+
+  // Open modal with project details
+  function openModal(projectId) {
+    const project = allProjects.find(p => p.id === projectId);
+    if (project) {
+      document.getElementById('modalTitle').textContent = project.name;
+      document.getElementById('modalMeta').textContent = `${project.format} • ${project.year}`;
+      document.getElementById('modalDescription').textContent = project.description;
+      document.getElementById('modalImage').src = project.image;
+      document.getElementById('modalImage').alt = project.name;
+
+      // Keep background image active and hide video
+      bgImage.style.backgroundImage = `url('${project.image}')`;
+      bgImage.classList.add('active');
+      bgVideo.style.opacity = 0;
+
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  // Close modal
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    // Revert to fallback video
+    bgImage.classList.remove('active');
+    bgVideo.style.opacity = 1;
+  }
+
+  // Open about modal
+  function openAboutModal() {
+    if (aboutData) {
+      document.getElementById('aboutModalTitle').textContent = aboutData.title;
+      document.getElementById('aboutModalContent').textContent = aboutData.content;
+
+      // Render sections
+      const sectionsContainer = document.getElementById('aboutSections');
+      sectionsContainer.innerHTML = '';
+
+      if (aboutData.sections && aboutData.sections.length > 0) {
+        aboutData.sections.forEach(section => {
+          const sectionDiv = document.createElement('div');
+          sectionDiv.style.marginTop = '1.5rem';
+          sectionDiv.style.paddingTop = '1rem';
+          sectionDiv.style.borderTop = '1px solid #2a2a2e';
+
+          const heading = document.createElement('h3');
+          heading.textContent = section.heading;
+          heading.style.fontSize = '1.1rem';
+          heading.style.marginBottom = '0.5rem';
+          heading.style.fontFamily = '"Alte Haas Grotesk", sans-serif';
+          heading.style.fontWeight = 'bold';
+
+          const text = document.createElement('p');
+          text.textContent = section.text;
+          text.style.margin = '0';
+          text.style.lineHeight = '1.6';
+
+          sectionDiv.appendChild(heading);
+          sectionDiv.appendChild(text);
+          sectionsContainer.appendChild(sectionDiv);
+        });
+      }
+
+      aboutModalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  // Close about modal
+  function closeAboutModal() {
+    aboutModalOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Attach modal handlers
+  function attachModalHandlers() {
+    const projectLinks = document.querySelectorAll('.project-link');
+
+    projectLinks.forEach(link => {
+      // Open modal on click
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const projectId = parseInt(link.dataset.projectId);
+        openModal(projectId);
+      });
+
+      // Background change on hover/focus (for non-modal interaction)
+      link.addEventListener('mouseenter', () => {
+        const src = link.dataset.bg;
+        bgImage.style.backgroundImage = `url('${src}')`;
+        bgImage.classList.add('active');
+        bgVideo.style.opacity = 0;
+      });
+
+      link.addEventListener('mouseleave', () => {
+        // Only revert if modal is not active
+        if (!modalOverlay.classList.contains('active')) {
+          bgImage.classList.remove('active');
+          bgVideo.style.opacity = 1;
+        }
+      });
+
+      link.addEventListener('focus', () => {
+        const src = link.dataset.bg;
+        bgImage.style.backgroundImage = `url('${src}')`;
+        bgImage.classList.add('active');
+        bgVideo.style.opacity = 0;
+      });
+
+      link.addEventListener('blur', () => {
+        // Only revert if modal is not active
+        if (!modalOverlay.classList.contains('active')) {
+          bgImage.classList.remove('active');
+          bgVideo.style.opacity = 1;
+        }
+      });
+    });
+  }
+
+  // Attach about button handler
+  function attachAboutHandler() {
+    if (aboutButton) {
+      aboutButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        openAboutModal();
+      });
+    }
+  }
+
+  // Close modal handlers
+  modalClose.addEventListener('click', closeModal);
+  aboutModalClose.addEventListener('click', closeAboutModal);
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      closeModal();
+    }
+  });
+
+  aboutModalOverlay.addEventListener('click', (e) => {
+    if (e.target === aboutModalOverlay) {
+      closeAboutModal();
+    }
+  });
+
+  // Close modals with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+      if (aboutModalOverlay.classList.contains('active')) {
+        closeAboutModal();
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
