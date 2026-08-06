@@ -207,12 +207,13 @@
   .modal-content {
     position: relative;
     background: #0d0d0f;
-    border: 1px solid #2a2a2e;
-    border-radius: 4px;
+    border: none;
+    border-radius: 0;
     padding: 2rem;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
+    max-width: 100%;
+    width: 100%;
+    max-height: 100vh;
+    height: 100vh;
     overflow-y: auto;
     animation: slideIn 0.3s ease;
   }
@@ -229,21 +230,22 @@
   }
 
   .modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
     background: none;
     border: none;
     color: var(--fg);
-    font-size: 2rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: color 0.2s ease;
-    padding: 0;
-    width: 2rem;
-    height: 2rem;
+    padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 101;
+    font-family: "Alte Haas Grotesk", sans-serif;
+    font-weight: bold;
   }
 
   .modal-close:hover {
@@ -276,24 +278,41 @@
     gap: 1.5rem;
   }
 
-  .modal-image {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    border-radius: 2px;
-    object-fit: cover;
-  }
-
   .modal-body p {
     margin: 0;
     line-height: 1.6;
     color: var(--fg);
   }
 
+  /* Gallery Styles */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .gallery-item {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+  }
+
   @media (max-width: 768px) {
     .modal-content {
       padding: 1.5rem;
       max-width: 95%;
+    }
+
+    .gallery {
+      grid-template-columns: 1fr;
     }
 
     .modal-header h2 {
@@ -335,23 +354,21 @@
 
 <!-- Modal Overlay -->
 <div class="modal-overlay" id="modalOverlay">
+  <button class="modal-close" id="modalClose">←</button>
   <div class="modal-content">
-    <button class="modal-close" id="modalClose">&times;</button>
     <div class="modal-header">
       <h2 id="modalTitle"></h2>
-    </div>
-    <div class="modal-body" id="projectModalBody">
-      <img id="modalImage" src="" alt="Project image" class="modal-image">
       <p id="modalMeta"></p>
-      <p id="modalDescription"></p>
     </div>
+    <p id="modalDescription"></p>
+    <div class="gallery" id="projectGallery"></div>
   </div>
 </div>
 
 <!-- About Modal Overlay -->
 <div class="modal-overlay" id="aboutModalOverlay">
+  <button class="modal-close" id="aboutModalClose">←</button>
   <div class="modal-content">
-    <button class="modal-close" id="aboutModalClose">&times;</button>
     <div class="modal-header">
       <h2 id="aboutModalTitle"></h2>
     </div>
@@ -445,8 +462,21 @@
       document.getElementById('modalTitle').textContent = project.name;
       document.getElementById('modalMeta').textContent = `${project.format} • ${project.year}`;
       document.getElementById('modalDescription').textContent = project.description;
-      document.getElementById('modalImage').src = project.image;
-      document.getElementById('modalImage').alt = project.name;
+
+      // Render gallery
+      const gallery = document.getElementById('projectGallery');
+      gallery.innerHTML = '';
+
+      const images = project.images || [project.image];
+      images.forEach(img => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        const imgElement = document.createElement('img');
+        imgElement.src = img;
+        imgElement.alt = project.name;
+        item.appendChild(imgElement);
+        gallery.appendChild(item);
+      });
 
       // Keep background image active and hide video
       bgImage.style.backgroundImage = `url('${project.image}')`;
